@@ -1,0 +1,60 @@
+name: libero_image
+
+shape_meta: &shape_meta
+  # acceptable types: rgb, low_dim
+  obs:
+    agentview_image:
+      shape: [3, 84, 84]
+      type: rgb
+    robot0_eye_in_hand_image:
+      shape: [3, 84, 84]
+      type: rgb
+    robot0_eef_pos:
+      shape: [3]
+      # type default: low_dim
+    robot0_eef_quat:
+      shape: [4]
+    robot0_gripper_qpos:
+      shape: [2]
+  action: 
+    shape: [10]
+
+task_name: &task_name libero_90
+dataset_type: &dataset_type KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet_demo
+dataset_path: &dataset_path datasets/libero_robomimic_format_demo50/${task.task_name}/${task.dataset_type}_abs.hdf5
+abs_action: &abs_action True
+cam_proj_trans_mats_path: "datasets/libero_rgb/libero_90/camera_proj_transform_mats.pkl"
+
+env_runner:
+  _target_: adaflow.env_runner.libero_image_runner.LIBEROImageRunner
+  dataset_path: *dataset_path
+  dataset_type: *dataset_type
+  shape_meta: *shape_meta
+  # use python's eval function as resolver, single-quoted string as argument
+  max_steps: ${eval:'500 if "${task.dataset_type}" == "mh" else 400'}
+  n_obs_steps: ${n_obs_steps}
+  n_action_steps: ${n_action_steps}
+  render_obs_key: 'agentview_image'
+  fps: 10
+  crf: 22
+  abs_action: *abs_action
+  tqdm_interval_sec: 1.0
+  n_envs: 10
+  init_states_folder: &init_states_folder datasets/init_files/${task.task_name}
+  seed: 1904
+  camera_view: 'agentview'
+
+dataset:
+  _target_: adaflow.dataset.robomimic_replay_image_dataset.RobomimicReplayImageDataset
+  shape_meta: *shape_meta
+  dataset_path: *dataset_path
+  horizon: ${horizon}
+  pad_before: ${eval:'${n_obs_steps}-1+${n_latency_steps}'}
+  pad_after: ${eval:'${n_action_steps}-1'}
+  n_obs_steps: ${dataset_obs_steps}
+  abs_action: *abs_action
+  rotation_rep: 'rotation_6d'
+  use_legacy_normalizer: False
+  use_cache: True
+  seed: 42
+  val_ratio: 0.02
