@@ -69,7 +69,7 @@ export CUDA_VISIBLE_DEVICES=0
 export MUJOCO_EGL_DEVICE_ID=0
 python train.py --config-name=train_adaflow_unet_image_workspace task=libero_image_abs task.dataset_type=KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet_demo
 
-# Diffusion policy training
+# Diffusion Policy training
 export HYDRA_FULL_ERROR=1
 export CUDA_VISIBLE_DEVICES=0
 export MUJOCO_EGL_DEVICE_ID=0
@@ -88,7 +88,7 @@ export CUDA_VISIBLE_DEVICES=0
 export MUJOCO_EGL_DEVICE_ID=0
 python eval.py --eval_exp_dir=$eval_exp_dir --sampling_method="adaptive" --evaluate_mode="rand_start" --num_inference_steps=5 --eta=0.5
 
-# Diffusion model evaluation
+# Diffusion Policy evaluation
 eval_exp_dir="exps/outputs/2024.05.29/02.39.34_train_diffusion_unet_image_libero_image_KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet_demo"
 export CUDA_VISIBLE_DEVICES=0
 export MUJOCO_EGL_DEVICE_ID=0
